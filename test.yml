@@ -1,0 +1,38 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  create_files:
+    name: touch salut
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: touch salut
+        run: |
+          mkdir out/
+          echo 'salut' > out/salut
+          echo 'foo' > out/foo
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: ./out/*
+
+  cat_artifacts:
+    name: cat artifacts
+    needs: create_files
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Download wheels artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: output
+
+      - name: run tree
+        run: |
+          aptitude install tree
+          tree
